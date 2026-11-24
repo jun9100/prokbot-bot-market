@@ -41,7 +41,7 @@ https://jun9100.github.io/prokbot-bot-market/index.json
 2. 也可直接从 ProkBot Host2 管理台导出规范条目（`GET /admin/api/bot-market/items/:id/registry-entry`）。
 3. 本地运行零依赖校验器（Node.js 20+）：
    ```sh
-   node path/to/prokbot-host2/host/tools/build-market-index.mjs --source ./bots --check
+   node tools/host/tools/build-market-index.mjs --source ./bots --check
    ```
 4. 发起 Pull Request，CI 将自动完成结构、双语字段、密钥脱敏、零记忆、暂停例程与确定性 ZIP 打包校验；合并到 `main` 后自动部署到 GitHub Pages。
 

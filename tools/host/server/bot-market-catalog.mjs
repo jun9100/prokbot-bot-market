@@ -53,6 +53,86 @@ export const APP_CATALOG_META = Object.freeze({
     name: { 'zh-CN': '地图与地点搜索', en: 'Places Search' },
     description: { 'zh-CN': '使用高德、百度或 Nominatim 搜索附近地点、餐厅与路线信息。', en: 'Search restaurants, POIs, and addresses via AMap, Baidu, or Nominatim.' },
   },
+  'rss-feeds': {
+    category: 'INFORMATION',
+    name: { 'zh-CN': 'RSS / Atom 订阅', en: 'RSS / Atom Feeds' },
+    description: { 'zh-CN': '拉取并汇总关注的 RSS 与 Atom 资讯源和论文动态。', en: 'Fetch and summarize subscribed RSS and Atom feeds.' },
+  },
+  'home-assistant': {
+    category: 'SMART_HOME',
+    name: { 'zh-CN': 'Home Assistant 智能家居', en: 'Home Assistant' },
+    description: { 'zh-CN': '查看家庭设备传感器状态、告警与自动化场景。', en: 'Inspect smart-home sensor states, alerts, and automations.' },
+  },
+  'web-watch': {
+    category: 'INFORMATION',
+    name: { 'zh-CN': '网页变化监控', en: 'Web Change Watch' },
+    description: { 'zh-CN': '跟踪指定网页或状态页的变化与异常更新。', en: 'Monitor web pages and status pages for content changes.' },
+  },
+  tasks: {
+    category: 'PRODUCTIVITY',
+    name: { 'zh-CN': '个人待办任务', en: 'Personal Tasks' },
+    description: { 'zh-CN': '管理待办清单、优先级、截止日期与行动项。', en: 'Manage personal to-do lists, priorities, and deadlines.' },
+  },
+  linear: {
+    category: 'DEVELOPER_TOOLS',
+    name: { 'zh-CN': 'Linear 项目追踪', en: 'Linear' },
+    description: { 'zh-CN': '查询 Linear 议题、迭代进度与发版状态。', en: 'Browse Linear issues, cycles, and release progress.' },
+  },
+  jira: {
+    category: 'DEVELOPER_TOOLS',
+    name: { 'zh-CN': 'Jira 项目管理', en: 'Jira' },
+    description: { 'zh-CN': '查询与跟踪 Jira 工单、Sprint 与版本变更。', en: 'Search and track Jira tickets, sprints, and releases.' },
+  },
+  feishu: {
+    category: 'COMMUNICATION',
+    name: { 'zh-CN': '飞书 / Lark', en: 'Feishu / Lark' },
+    description: { 'zh-CN': '读取或发送飞书消息与团队通知。', en: 'Read and send Feishu / Lark messages and team updates.' },
+  },
+  slack: {
+    category: 'COMMUNICATION',
+    name: { 'zh-CN': 'Slack', en: 'Slack' },
+    description: { 'zh-CN': '查询频道消息并在授权后发送 Slack 通知。', en: 'Read channel messages and post authorized Slack updates.' },
+  },
+  'google-drive': {
+    category: 'STORAGE',
+    name: { 'zh-CN': 'Google Drive', en: 'Google Drive' },
+    description: { 'zh-CN': '搜索并读取 Google Drive 文档与共享文件。', en: 'Search and read files in Google Drive.' },
+  },
+  webdav: {
+    category: 'STORAGE',
+    name: { 'zh-CN': 'WebDAV 网盘', en: 'WebDAV Storage' },
+    description: { 'zh-CN': '访问坚果云、Nextcloud 或自建 NAS 的 WebDAV 文件。', en: 'Access files stored on Nextcloud, NAS, or WebDAV servers.' },
+  },
+  weather: {
+    category: 'MAPS_AND_TRAVEL',
+    name: { 'zh-CN': '天气预报', en: 'Weather' },
+    description: { 'zh-CN': '查询实时天气、未来预报与出行提醒。', en: 'Check live weather conditions and forecasts.' },
+  },
+  obsidian: {
+    category: 'PRODUCTIVITY',
+    name: { 'zh-CN': 'Obsidian 知识库', en: 'Obsidian Vault' },
+    description: { 'zh-CN': '检索与整理 Obsidian 本地 Markdown 笔记库。', en: 'Search and organize Markdown notes in an Obsidian vault.' },
+  },
+  'knowledge-base': {
+    category: 'PRODUCTIVITY',
+    name: { 'zh-CN': '本地知识库', en: 'Knowledge Base' },
+    description: { 'zh-CN': '检索自托管 NAS 与文档目录中的私有知识。', en: 'Search private documents in a self-hosted knowledge base.' },
+  },
+  vaultwarden: {
+    category: 'SECURITY',
+    name: { 'zh-CN': 'Vaultwarden 密码库', en: 'Vaultwarden' },
+    description: { 'zh-CN': '在审批机制下协助安全登录与凭据检索。', en: 'Approval-gated credential lookup and safe login assistance.' },
+  },
+  'onepassword-connect': {
+    category: 'SECURITY',
+    name: { 'zh-CN': '1Password Connect', en: '1Password Connect' },
+    description: { 'zh-CN': '通过 1Password Connect 在授权后检索条目。', en: 'Authorized secret lookup via 1Password Connect.' },
+  },
+  'handoff-workflows': {
+    category: 'PRODUCTIVITY',
+    name: { 'zh-CN': '多 Bot 协作流', en: 'Multi-Bot Handoff' },
+    description: { 'zh-CN': '在多个 Bot 之间编排结构化任务交接。', en: 'Coordinate structured task handoffs across multiple Bots.' },
+  },
 });
 
 const isChinese = (locale) => normalizeLocaleTag(locale).startsWith('zh');

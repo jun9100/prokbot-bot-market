@@ -15,7 +15,7 @@
 //     [--check]
 
 import { createHash } from 'node:crypto';
-import { mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, stat, unlink, writeFile } from 'node:fs/promises';
 import { join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
@@ -45,6 +45,8 @@ const SEMVER_RE =
 const VALID_CATEGORIES = new Set(BOT_MARKET_CATEGORIES.map((c) => c.id));
 const FORBIDDEN_FILE_RE =
   /(?:^|\/)(?:\.env(?:\..*)?|.*\.(?:db|sqlite|sqlite3|key|p8|p12|pem|mobileprovision)|credentials?\.json|cookies?\.json)$/i;
+const CRON_5_FIELD_RE =
+  /^[0-9*,/-]+(?:\s+[0-9*,/-]+){2}\s+[0-9*,/A-Za-z-]+(?:\s+[0-9*,/A-Za-z-]+)$/;
 const MAX_BOT_COUNT = 1000;
 const MAX_TEXT_FILE_BYTES = 512 * 1024;
 const MAX_ZIP_BYTES = 10 * 1024 * 1024;
@@ -138,6 +140,11 @@ export function validateBotMeta(rawMeta, folderName) {
     SLUG_RE.test(slug),
     400,
     `${folderName}: invalid slug "${slug}" (must match ${SLUG_RE})`,
+  );
+  check(
+    slug === folderName,
+    400,
+    `${folderName}: meta.slug "${slug}" must match directory name "${folderName}"`,
   );
   const version = typeof rawMeta.version === 'string' ? rawMeta.version.trim() : '';
   check(
@@ -254,6 +261,17 @@ function parseSkillMarkdown(rawMarkdown, skillFolderName) {
   };
 }
 
+function isAllowedBotRelativePath(rel, isDir) {
+  if (isDir) {
+    if (rel === 'skills') return true;
+    const parts = rel.split('/');
+    return parts.length === 2 && parts[0] === 'skills' && SKILL_DIR_RE.test(parts[1]);
+  }
+  if (rel === 'meta.json' || rel === 'recipe.json') return true;
+  const parts = rel.split('/');
+  return parts.length === 3 && parts[0] === 'skills' && SKILL_DIR_RE.test(parts[1]) && parts[2] === 'SKILL.md';
+}
+
 async function scanForbiddenFiles(rootDir, currentDir = rootDir) {
   const entries = await readdir(currentDir, { withFileTypes: true });
   entries.sort((a, b) => compareCodeUnits(a.name, b.name));
@@ -265,6 +283,11 @@ async function scanForbiddenFiles(rootDir, currentDir = rootDir) {
       !FORBIDDEN_FILE_RE.test(rel),
       400,
       `Forbidden credential or database file in bot directory: ${rel}`,
+    );
+    check(
+      isAllowedBotRelativePath(rel, entry.isDirectory()),
+      400,
+      `Unexpected file or directory in bot folder (only meta.json, recipe.json, and skills/<name>/SKILL.md are allowed): ${rel}`,
     );
     if (entry.isDirectory()) {
       await scanForbiddenFiles(rootDir, full);
@@ -383,6 +406,13 @@ export function packageBotRecipe(rawRecipe, { meta = null, extraSkills = [], dep
   );
   const routines = (rawRecipe.routines ?? []).map((routine) => {
     check(routine && typeof routine === 'object' && !Array.isArray(routine), 400, `${label}: invalid routine entry`);
+    if (typeof routine.schedule === 'string' && routine.schedule.trim()) {
+      check(
+        CRON_5_FIELD_RE.test(routine.schedule.trim()),
+        400,
+        `${label}: routine "${routine.slug || routine.name || 'unnamed'}" schedule "${routine.schedule}" must be a valid 5-field cron expression`,
+      );
+    }
     return { ...routine, isEnabled: false };
   });
 
@@ -602,6 +632,13 @@ export async function buildMarketIndex({
     const absOutput = resolve(outputDir);
     const packagesDir = join(absOutput, 'packages');
     await mkdir(packagesDir, { recursive: true });
+    const expectedFiles = new Set(packages.map((pkg) => pkg.filename));
+    const existingEntries = await readdir(packagesDir, { withFileTypes: true });
+    for (const entry of existingEntries) {
+      if (entry.isFile() && entry.name.endsWith('.zip') && !expectedFiles.has(entry.name)) {
+        await unlink(join(packagesDir, entry.name));
+      }
+    }
     for (const pkg of packages) {
       await writeFile(join(packagesDir, pkg.filename), pkg.bytes);
     }

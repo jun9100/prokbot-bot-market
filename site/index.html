@@ -10,10 +10,16 @@
       --bg: #f6f8fa;
       --card: #ffffff;
       --fg: #1f2328;
-      --muted: #656d76;
+      --muted: #57606a;
       --border: rgba(31, 35, 40, 0.14);
       --accent: #0969da;
+      --btn-bg: #0969da;
+      --btn-fg: #ffffff;
       --pill: rgba(9, 105, 218, 0.1);
+      --req-bg: rgba(154, 103, 0, 0.14);
+      --req-fg: #9a6700;
+      --cat-bg: rgba(87, 96, 106, 0.12);
+      --err: #cf222e;
     }
     @media (prefers-color-scheme: dark) {
       :root {
@@ -23,7 +29,13 @@
         --muted: #8b949e;
         --border: rgba(240, 246, 252, 0.14);
         --accent: #58a6ff;
+        --btn-bg: #1f6feb;
+        --btn-fg: #ffffff;
         --pill: rgba(88, 166, 255, 0.14);
+        --req-bg: rgba(210, 153, 34, 0.18);
+        --req-fg: #e3b341;
+        --cat-bg: rgba(139, 148, 158, 0.18);
+        --err: #f85149;
       }
     }
     * { box-sizing: border-box; }
@@ -34,71 +46,117 @@
       color: var(--fg);
       line-height: 1.5;
     }
-    .wrap { max-width: 980px; margin: 0 auto; padding: 32px 20px 56px; }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 32px 16px 56px; }
     header { display: grid; gap: 12px; margin-bottom: 24px; }
     h1 { margin: 0; font-size: 28px; letter-spacing: -0.4px; }
     .sub { margin: 0; color: var(--muted); font-size: 14px; }
+    .meta-line { margin: 0; color: var(--muted); font-size: 12px; }
     .feed-box {
       display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
       padding: 12px 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--card);
     }
-    .feed-box code { flex: 1; min-width: 220px; font-size: 13px; overflow-wrap: anywhere; }
+    .feed-box code { flex: 1; min-width: min(220px, 100%); font-size: 13px; overflow-wrap: anywhere; }
     button {
-      border: 1px solid var(--border); border-radius: 8px; padding: 7px 12px;
-      background: var(--accent); color: #fff; font-weight: 500; cursor: pointer; font-size: 13px;
+      border: 1px solid transparent; border-radius: 8px; padding: 7px 12px;
+      background: var(--btn-bg); color: var(--btn-fg); font-weight: 500; cursor: pointer; font-size: 13px;
     }
-    button.secondary { background: transparent; color: var(--fg); }
-    .toolbar { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+    button.secondary { background: transparent; color: var(--fg); border-color: var(--border); }
+    button.chip {
+      background: transparent; color: var(--muted); border-color: var(--border);
+      border-radius: 999px; padding: 4px 11px; font-size: 12px; font-weight: 400;
+    }
+    button.chip[aria-pressed="true"] {
+      background: var(--pill); color: var(--accent); border-color: var(--accent); font-weight: 500;
+    }
+    .toolbar { display: grid; gap: 10px; margin-bottom: 16px; }
     input[type="search"] {
-      flex: 1; min-width: 220px; padding: 9px 12px; border-radius: 10px;
+      width: 100%; padding: 9px 12px; border-radius: 10px;
       border: 1px solid var(--border); background: var(--card); color: var(--fg); font-size: 14px;
     }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(290px, 100%), 1fr)); gap: 14px; }
     .card {
       border: 1px solid var(--border); border-radius: 14px; background: var(--card);
-      padding: 16px; display: flex; flex-direction: column; gap: 10px;
+      padding: 16px; display: flex; flex-direction: column; gap: 10px; min-width: 0;
     }
-    .card-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
-    .card h2 { margin: 0; font-size: 16px; }
-    .ver { font-size: 12px; color: var(--muted); font-family: ui-monospace, SFMono-Regular, monospace; }
-    .tagline { margin: 0; font-size: 13px; color: var(--fg); }
-    .desc { margin: 0; font-size: 12px; color: var(--muted); flex: 1; }
+    .card-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; min-width: 0; }
+    .card h2 { margin: 0; font-size: 16px; overflow-wrap: anywhere; }
+    .ver { font-size: 12px; color: var(--muted); font-family: ui-monospace, SFMono-Regular, monospace; white-space: nowrap; flex-shrink: 0; }
+    .tagline { margin: 0; font-size: 13px; color: var(--fg); overflow-wrap: anywhere; }
+    .desc { margin: 0; font-size: 12px; color: var(--muted); flex: 1; overflow-wrap: anywhere; }
     .pills { display: flex; flex-wrap: wrap; gap: 6px; }
     .pill {
       font-size: 11px; padding: 2px 8px; border-radius: 999px;
       background: var(--pill); color: var(--accent);
     }
+    .pill.cat { background: var(--cat-bg); color: var(--fg); }
+    .pill.req { background: var(--req-bg); color: var(--req-fg); font-weight: 500; }
+    .card-meta {
+      display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px;
+      font-size: 11px; color: var(--muted);
+    }
+    .sha {
+      border: 0; padding: 0; background: transparent; color: var(--muted);
+      font: 11px/1.4 ui-monospace, SFMono-Regular, monospace; cursor: pointer;
+    }
+    .sha:hover { color: var(--accent); text-decoration: underline; }
     .card-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
-    a { color: var(--accent); text-decoration: none; }
+    a { color: var(--accent); text-decoration: none; white-space: nowrap; }
     a:hover { text-decoration: underline; }
-    .status { color: var(--muted); font-size: 14px; padding: 24px 0; }
+    .status { color: var(--muted); font-size: 14px; padding: 12px 0 18px; }
+    .status.err { color: var(--err); }
+    .empty { color: var(--muted); font-size: 14px; padding: 28px 16px; text-align: center; border: 1px dashed var(--border); border-radius: 12px; }
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
       <h1 id="title">ProkBot Community Bot Market</h1>
-      <p class="sub" id="subtitle">Purely declarative, secret-scanned, SHA-256 verified Bot templates for ProkBot Host2.</p>
+      <p class="sub" id="subtitle"></p>
+      <p class="meta-line" id="updated-at" hidden></p>
       <div class="feed-box">
         <code id="feed-url"></code>
-        <button id="copy-btn" type="button">Copy Feed URL</button>
+        <button id="copy-btn" type="button"></button>
         <button id="lang-btn" class="secondary" type="button">中文 / EN</button>
       </div>
     </header>
     <div class="toolbar">
-      <input id="search" type="search" placeholder="Search bots, tags, categories..." />
+      <input id="search" type="search" />
+      <div id="categories" class="chips" role="group"></div>
     </div>
-    <div id="status" class="status">Loading index.json…</div>
+    <div id="status" class="status" role="status" aria-live="polite"></div>
     <main id="grid" class="grid"></main>
   </div>
   <script>
+    const CATEGORY_LABELS = {
+      productivity: { 'zh-CN': '效率办公', en: 'Productivity' },
+      coding: { 'zh-CN': '研发工程', en: 'Engineering' },
+      research: { 'zh-CN': '信息研究', en: 'Research' },
+      life: { 'zh-CN': '生活出行', en: 'Life & Travel' },
+      ops: { 'zh-CN': '运维监控', en: 'DevOps & SRE' },
+      writing: { 'zh-CN': '写作编辑', en: 'Writing & Docs' },
+      learning: { 'zh-CN': '学习成长', en: 'Learning' },
+      finance: { 'zh-CN': '财务整理', en: 'Finance' },
+    };
+
     const isZhDefault = (navigator.language || '').toLowerCase().startsWith('zh');
     let lang = isZhDefault ? 'zh-CN' : 'en';
     let allBots = [];
+    let activeCategory = '';
+    let loading = true;
+    let loadError = '';
+    let updatedAt = '';
+    let copyTimer = null;
+
     const feedUrl = new URL('./index.json', window.location.href).href;
     document.getElementById('feed-url').textContent = feedUrl;
 
     const pick = obj => (obj && typeof obj === 'object' ? (obj[lang] || obj['zh-CN'] || obj.en || '') : String(obj || ''));
+    const allLocaleText = obj => (obj && typeof obj === 'object' ? Object.values(obj).join(' ') : String(obj || ''));
+    const categoryLabel = id => {
+      const entry = CATEGORY_LABELS[id];
+      return entry ? (entry[lang] || entry.en) : (id || '');
+    };
     const el = (tag, cls, text) => {
       const node = document.createElement(tag);
       if (cls) node.className = cls;
@@ -106,49 +164,195 @@
       return node;
     };
 
+    function safePackageUrl(raw) {
+      if (typeof raw !== 'string' || !raw.trim()) return null;
+      try {
+        const parsed = new URL(raw.trim(), window.location.href);
+        if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return null;
+        return parsed;
+      } catch {
+        return null;
+      }
+    }
+
+    async function copyText(text) {
+      if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+        try {
+          await navigator.clipboard.writeText(text);
+          return true;
+        } catch {
+          // Fall through to textarea fallback
+        }
+      }
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        const ok = document.execCommand('copy');
+        ta.remove();
+        return ok;
+      } catch {
+        return false;
+      }
+    }
+
+    function formatCounts(skillsCount, routinesCount) {
+      const s = Number(skillsCount) || 0;
+      const r = Number(routinesCount) || 0;
+      if (lang === 'zh-CN') return `${s} 个技能 · ${r} 个定时任务`;
+      return `${s} ${s === 1 ? 'skill' : 'skills'} · ${r} ${r === 1 ? 'routine' : 'routines'}`;
+    }
+
     function updateChrome() {
       const zh = lang === 'zh-CN';
+      document.documentElement.lang = lang;
       document.getElementById('subtitle').textContent = zh
         ? '适用于 ProkBot Host2 的纯声明式社区 Bot 模板市场（零记忆、例程默认暂停、密钥脱敏、SHA-256 校验）。'
         : 'Purely declarative, secret-scanned, SHA-256 verified Bot templates for ProkBot Host2.';
       document.getElementById('copy-btn').textContent = zh ? '复制订阅地址' : 'Copy Feed URL';
-      document.getElementById('search').placeholder = zh ? '搜索 Bot、标签或分类…' : 'Search bots, tags, categories…';
+      const searchEl = document.getElementById('search');
+      const placeholder = zh ? '搜索 Bot 名称、简介、标签、作者或关联应用…' : 'Search bots, tags, categories, authors, or apps…';
+      searchEl.placeholder = placeholder;
+      searchEl.setAttribute('aria-label', placeholder);
+      document.getElementById('categories').setAttribute('aria-label', zh ? '按分类筛选' : 'Filter by category');
+
+      const updatedEl = document.getElementById('updated-at');
+      if (updatedAt) {
+        const parsed = new Date(updatedAt);
+        const formatted = Number.isNaN(parsed.getTime()) ? updatedAt : parsed.toLocaleString(lang);
+        updatedEl.textContent = zh ? `索引更新时间：${formatted}` : `Index updated: ${formatted}`;
+        updatedEl.hidden = false;
+      } else {
+        updatedEl.hidden = true;
+      }
+    }
+
+    function renderCategoryChips() {
+      const wrap = document.getElementById('categories');
+      wrap.replaceChildren();
+      const cats = [...new Set(allBots.map(b => b.category).filter(Boolean))];
+      if (!cats.length) return;
+      const all = [{ id: '', label: lang === 'zh-CN' ? '全部' : 'All' }, ...cats.map(id => ({ id, label: categoryLabel(id) }))];
+      for (const cat of all) {
+        const btn = el('button', 'chip', cat.label);
+        btn.type = 'button';
+        btn.setAttribute('aria-pressed', String(activeCategory === cat.id));
+        btn.onclick = () => {
+          activeCategory = cat.id;
+          render();
+        };
+        wrap.append(btn);
+      }
     }
 
     function render() {
       updateChrome();
-      const q = document.getElementById('search').value.trim().toLowerCase();
+      const status = document.getElementById('status');
       const grid = document.getElementById('grid');
       grid.replaceChildren();
+
+      if (loading) {
+        status.className = 'status';
+        status.textContent = lang === 'zh-CN' ? '正在加载 index.json…' : 'Loading index.json…';
+        return;
+      }
+      if (loadError) {
+        status.className = 'status err';
+        status.textContent = lang === 'zh-CN'
+          ? `加载 index.json 失败：${loadError}`
+          : `Failed to load index.json: ${loadError}`;
+        return;
+      }
+
+      renderCategoryChips();
+      const q = document.getElementById('search').value.trim().toLowerCase();
       const list = allBots.filter(b => {
+        if (activeCategory && b.category !== activeCategory) return false;
         if (!q) return true;
-        const hay = [b.slug, b.category, pick(b.name), pick(b.tagline), pick(b.description), ...(b.tags || [])].join(' ').toLowerCase();
+        const catLabels = CATEGORY_LABELS[b.category] ? Object.values(CATEGORY_LABELS[b.category]).join(' ') : '';
+        const hay = [
+          b.slug, b.category, catLabels, b.author,
+          allLocaleText(b.name), allLocaleText(b.tagline), allLocaleText(b.description),
+          ...(b.tags || []), ...(b.requiredApps || []), ...(b.optionalApps || []),
+        ].join(' ').toLowerCase();
         return hay.includes(q);
       });
-      const status = document.getElementById('status');
+
+      status.className = 'status';
       status.textContent = lang === 'zh-CN' ? `共 ${list.length} 个社区模板` : `${list.length} community template(s)`;
+
+      if (!list.length) {
+        grid.append(el('div', 'empty', lang === 'zh-CN' ? '没有匹配的社区 Bot 模板。' : 'No matching community Bot templates.'));
+        return;
+      }
+
       for (const bot of list) {
         const card = el('article', 'card');
         const head = el('div', 'card-head');
-        head.append(el('h2', '', pick(bot.name) || bot.slug), el('span', 'ver', `v${bot.version}`));
+        const verText = bot.version ? `v${bot.version}` : '';
+        head.append(el('h2', '', pick(bot.name) || bot.slug), el('span', 'ver', verText));
+
         const pills = el('div', 'pills');
-        pills.append(el('span', 'pill', bot.category));
-        for (const app of (bot.optionalApps || []).slice(0, 4)) pills.append(el('span', 'pill', app));
+        if (bot.category) pills.append(el('span', 'pill cat', categoryLabel(bot.category)));
+        const reqApps = Array.isArray(bot.requiredApps) ? bot.requiredApps : [];
+        for (const app of reqApps) {
+          pills.append(el('span', 'pill req', lang === 'zh-CN' ? `必需: ${app}` : `Required: ${app}`));
+        }
+        const optApps = Array.isArray(bot.optionalApps) ? bot.optionalApps : [];
+        for (const app of optApps.slice(0, 4)) pills.append(el('span', 'pill', app));
+        if (optApps.length > 4) {
+          pills.append(el('span', 'pill', `+${optApps.length - 4}`));
+        }
+
+        const metaRow = el('div', 'card-meta');
+        metaRow.append(el('span', '', bot.author ? `${lang === 'zh-CN' ? '作者' : 'By'}: ${bot.author}` : ''));
+        if (typeof bot.sha256 === 'string' && bot.sha256.length >= 12) {
+          const shaBtn = el('button', 'sha', `sha256:${bot.sha256.slice(0, 12)}…`);
+          shaBtn.type = 'button';
+          shaBtn.title = bot.sha256;
+          shaBtn.onclick = async () => {
+            const ok = await copyText(bot.sha256);
+            shaBtn.textContent = ok
+              ? (lang === 'zh-CN' ? '已复制 SHA-256' : 'Copied SHA-256')
+              : (lang === 'zh-CN' ? '复制失败' : 'Copy failed');
+            setTimeout(() => { shaBtn.textContent = `sha256:${bot.sha256.slice(0, 12)}…`; }, 1500);
+          };
+          metaRow.append(shaBtn);
+        }
+
         const foot = el('div', 'card-foot');
-        const dl = el('a', '', lang === 'zh-CN' ? '下载配方 ZIP' : 'Download ZIP');
-        dl.href = bot.packageUrl;
-        foot.append(el('span', '', `${bot.skillsCount || 0} skills · ${bot.routinesCount || 0} routines`), dl);
-        card.append(head, el('p', 'tagline', pick(bot.tagline)), el('p', 'desc', pick(bot.description)), pills, foot);
+        foot.append(el('span', '', formatCounts(bot.skillsCount, bot.routinesCount)));
+        const parsedPkgUrl = safePackageUrl(bot.packageUrl);
+        if (parsedPkgUrl) {
+          const dl = el('a', '', lang === 'zh-CN' ? '下载配方 ZIP' : 'Download ZIP');
+          dl.href = parsedPkgUrl.href;
+          dl.rel = 'noopener noreferrer';
+          if (parsedPkgUrl.origin === window.location.origin) {
+            dl.setAttribute('download', '');
+          }
+          foot.append(dl);
+        }
+
+        card.append(head, el('p', 'tagline', pick(bot.tagline)), el('p', 'desc', pick(bot.description)), pills, metaRow, foot);
         grid.append(card);
       }
     }
 
     document.getElementById('copy-btn').onclick = async () => {
-      try {
-        await navigator.clipboard.writeText(feedUrl);
-        document.getElementById('copy-btn').textContent = lang === 'zh-CN' ? '已复制' : 'Copied';
-        setTimeout(updateChrome, 1500);
-      } catch {}
+      const btn = document.getElementById('copy-btn');
+      const ok = await copyText(feedUrl);
+      if (copyTimer) clearTimeout(copyTimer);
+      btn.textContent = ok
+        ? (lang === 'zh-CN' ? '已复制' : 'Copied')
+        : (lang === 'zh-CN' ? '请手动复制左侧地址' : 'Copy manually');
+      copyTimer = setTimeout(() => {
+        copyTimer = null;
+        updateChrome();
+      }, 1800);
     };
     document.getElementById('lang-btn').onclick = () => {
       lang = lang === 'zh-CN' ? 'en' : 'zh-CN';
@@ -156,15 +360,30 @@
     };
     document.getElementById('search').oninput = render;
 
+    // Paint localized initial chrome immediately to prevent English flash on zh-CN browsers
+    render();
+
     fetch('./index.json')
-      .then(r => r.json())
+      .then(async r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
       .then(data => {
-        if (data.registryName) document.getElementById('title').textContent = data.registryName;
-        allBots = Array.isArray(data.bots) ? data.bots : [];
+        if (!data || typeof data !== 'object' || !Array.isArray(data.bots)) {
+          throw new Error('Invalid index.json schema');
+        }
+        const titleText = data.registryName || data.name;
+        if (titleText) document.getElementById('title').textContent = titleText;
+        updatedAt = typeof data.updatedAt === 'string' ? data.updatedAt : '';
+        allBots = data.bots;
+        loading = false;
+        loadError = '';
         render();
       })
       .catch(err => {
-        document.getElementById('status').textContent = `Failed to load index.json: ${err.message}`;
+        loading = false;
+        loadError = err?.message || String(err);
+        render();
       });
   </script>
 </body>

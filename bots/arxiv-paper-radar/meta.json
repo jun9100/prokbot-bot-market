@@ -20,5 +20,5 @@
   "avatarShape": "diamond",
   "avatarColor": "violet",
   "requiredApps": [],
-  "optionalApps": ["rss", "notion"]
+  "optionalApps": ["rss-feeds", "notion"]
 }

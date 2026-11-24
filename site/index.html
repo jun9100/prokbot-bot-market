@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ProkBot Community Bot Market</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f6f8fa;
+      --card: #ffffff;
+      --fg: #1f2328;
+      --muted: #656d76;
+      --border: rgba(31, 35, 40, 0.14);
+      --accent: #0969da;
+      --pill: rgba(9, 105, 218, 0.1);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0d1117;
+        --card: #161b22;
+        --fg: #e6edf3;
+        --muted: #8b949e;
+        --border: rgba(240, 246, 252, 0.14);
+        --accent: #58a6ff;
+        --pill: rgba(88, 166, 255, 0.14);
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.5;
+    }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 32px 20px 56px; }
+    header { display: grid; gap: 12px; margin-bottom: 24px; }
+    h1 { margin: 0; font-size: 28px; letter-spacing: -0.4px; }
+    .sub { margin: 0; color: var(--muted); font-size: 14px; }
+    .feed-box {
+      display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+      padding: 12px 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--card);
+    }
+    .feed-box code { flex: 1; min-width: 220px; font-size: 13px; overflow-wrap: anywhere; }
+    button {
+      border: 1px solid var(--border); border-radius: 8px; padding: 7px 12px;
+      background: var(--accent); color: #fff; font-weight: 500; cursor: pointer; font-size: 13px;
+    }
+    button.secondary { background: transparent; color: var(--fg); }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+    input[type="search"] {
+      flex: 1; min-width: 220px; padding: 9px 12px; border-radius: 10px;
+      border: 1px solid var(--border); background: var(--card); color: var(--fg); font-size: 14px;
+    }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; }
+    .card {
+      border: 1px solid var(--border); border-radius: 14px; background: var(--card);
+      padding: 16px; display: flex; flex-direction: column; gap: 10px;
+    }
+    .card-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+    .card h2 { margin: 0; font-size: 16px; }
+    .ver { font-size: 12px; color: var(--muted); font-family: ui-monospace, SFMono-Regular, monospace; }
+    .tagline { margin: 0; font-size: 13px; color: var(--fg); }
+    .desc { margin: 0; font-size: 12px; color: var(--muted); flex: 1; }
+    .pills { display: flex; flex-wrap: wrap; gap: 6px; }
+    .pill {
+      font-size: 11px; padding: 2px 8px; border-radius: 999px;
+      background: var(--pill); color: var(--accent);
+    }
+    .card-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .status { color: var(--muted); font-size: 14px; padding: 24px 0; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1 id="title">ProkBot Community Bot Market</h1>
+      <p class="sub" id="subtitle">Purely declarative, secret-scanned, SHA-256 verified Bot templates for ProkBot Host2.</p>
+      <div class="feed-box">
+        <code id="feed-url"></code>
+        <button id="copy-btn" type="button">Copy Feed URL</button>
+        <button id="lang-btn" class="secondary" type="button">中文 / EN</button>
+      </div>
+    </header>
+    <div class="toolbar">
+      <input id="search" type="search" placeholder="Search bots, tags, categories..." />
+    </div>
+    <div id="status" class="status">Loading index.json…</div>
+    <main id="grid" class="grid"></main>
+  </div>
+  <script>
+    const isZhDefault = (navigator.language || '').toLowerCase().startsWith('zh');
+    let lang = isZhDefault ? 'zh-CN' : 'en';
+    let allBots = [];
+    const feedUrl = new URL('./index.json', window.location.href).href;
+    document.getElementById('feed-url').textContent = feedUrl;
+
+    const pick = obj => (obj && typeof obj === 'object' ? (obj[lang] || obj['zh-CN'] || obj.en || '') : String(obj || ''));
+    const el = (tag, cls, text) => {
+      const node = document.createElement(tag);
+      if (cls) node.className = cls;
+      if (text !== undefined) node.textContent = text;
+      return node;
+    };
+
+    function updateChrome() {
+      const zh = lang === 'zh-CN';
+      document.getElementById('subtitle').textContent = zh
+        ? '适用于 ProkBot Host2 的纯声明式社区 Bot 模板市场（零记忆、例程默认暂停、密钥脱敏、SHA-256 校验）。'
+        : 'Purely declarative, secret-scanned, SHA-256 verified Bot templates for ProkBot Host2.';
+      document.getElementById('copy-btn').textContent = zh ? '复制订阅地址' : 'Copy Feed URL';
+      document.getElementById('search').placeholder = zh ? '搜索 Bot、标签或分类…' : 'Search bots, tags, categories…';
+    }
+
+    function render() {
+      updateChrome();
+      const q = document.getElementById('search').value.trim().toLowerCase();
+      const grid = document.getElementById('grid');
+      grid.replaceChildren();
+      const list = allBots.filter(b => {
+        if (!q) return true;
+        const hay = [b.slug, b.category, pick(b.name), pick(b.tagline), pick(b.description), ...(b.tags || [])].join(' ').toLowerCase();
+        return hay.includes(q);
+      });
+      const status = document.getElementById('status');
+      status.textContent = lang === 'zh-CN' ? `共 ${list.length} 个社区模板` : `${list.length} community template(s)`;
+      for (const bot of list) {
+        const card = el('article', 'card');
+        const head = el('div', 'card-head');
+        head.append(el('h2', '', pick(bot.name) || bot.slug), el('span', 'ver', `v${bot.version}`));
+        const pills = el('div', 'pills');
+        pills.append(el('span', 'pill', bot.category));
+        for (const app of (bot.optionalApps || []).slice(0, 4)) pills.append(el('span', 'pill', app));
+        const foot = el('div', 'card-foot');
+        const dl = el('a', '', lang === 'zh-CN' ? '下载配方 ZIP' : 'Download ZIP');
+        dl.href = bot.packageUrl;
+        foot.append(el('span', '', `${bot.skillsCount || 0} skills · ${bot.routinesCount || 0} routines`), dl);
+        card.append(head, el('p', 'tagline', pick(bot.tagline)), el('p', 'desc', pick(bot.description)), pills, foot);
+        grid.append(card);
+      }
+    }
+
+    document.getElementById('copy-btn').onclick = async () => {
+      try {
+        await navigator.clipboard.writeText(feedUrl);
+        document.getElementById('copy-btn').textContent = lang === 'zh-CN' ? '已复制' : 'Copied';
+        setTimeout(updateChrome, 1500);
+      } catch {}
+    };
+    document.getElementById('lang-btn').onclick = () => {
+      lang = lang === 'zh-CN' ? 'en' : 'zh-CN';
+      render();
+    };
+    document.getElementById('search').oninput = render;
+
+    fetch('./index.json')
+      .then(r => r.json())
+      .then(data => {
+        if (data.registryName) document.getElementById('title').textContent = data.registryName;
+        allBots = Array.isArray(data.bots) ? data.bots : [];
+        render();
+      })
+      .catch(err => {
+        document.getElementById('status').textContent = `Failed to load index.json: ${err.message}`;
+      });
+  </script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{
+  "slug": "japanese-conversation-tutor",
+  "version": "1.0.0",
+  "category": "learning",
+  "name": {
+    "zh-CN": "日语会话与 JLPT 陪练",
+    "en": "Japanese Conversation & JLPT Coach"
+  },
+  "tagline": {
+    "zh-CN": "日常情景对话、敬语纠偏与 N5–N1 语法精讲，边聊边提升自然表达。",
+    "en": "Practical Japanese dialogue practice, keigo coaching, and JLPT N5-N1 grammar drills."
+  },
+  "description": {
+    "zh-CN": "根据你的当前水平（N5–N1）定制旅行、职场、生活情景对话，逐句给出更地道的日语改写、假名注音与简洁语法点拆解。",
+    "en": "Adapts to your JLPT level (N5-N1) for travel, work, and daily conversation roleplay, giving gentle natural rewrites, furigana readings, and bite-sized grammar notes."
+  },
+  "author": "ProkBot Community",
+  "license": "ProkBot-Noncommercial-1.0",
+  "tags": ["japanese", "jlpt", "language", "speaking", "learning", "日语"],
+  "avatarShape": "orb",
+  "avatarColor": "rose",
+  "requiredApps": [],
+  "optionalApps": []
+}

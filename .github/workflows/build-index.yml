@@ -1,0 +1,103 @@
+name: Build & Publish Bot Market Index
+
+on:
+  pull_request:
+    paths:
+      - 'bots/**'
+      - 'site/**'
+      - '.github/workflows/build-index.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'bots/**'
+      - 'site/**'
+      - '.github/workflows/build-index.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: pages-bot-market
+  cancel-in-progress: false
+
+env:
+  # Pin PROKBOT_TOOLS_REF to an immutable 40-character commit SHA for reproducible, supply-chain-safe builds.
+  PROKBOT_TOOLS_REPO: jun9100/prokbot-host2
+  PROKBOT_TOOLS_REF: 3aaa8df175cfdb79bdb80b16d25af08d161979a8
+  REGISTRY_NAME: ProkBot Community Market
+
+jobs:
+  validate-and-build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout market repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Checkout ProkBot registry builder tooling
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.PROKBOT_TOOLS_REPO }}
+          ref: ${{ env.PROKBOT_TOOLS_REF }}
+          path: .prokbot-tools
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            host/tools/build-market-index.mjs
+            host/server/bot-market.mjs
+            host/server/bot-market-catalog.mjs
+            host/server/locale.mjs
+            host/server/market-secrets.mjs
+            host/server/package-files.mjs
+            host/server/security.mjs
+            host/server/sharing-package.mjs
+            host/server/sharing-zip.mjs
+            host/server/skills.mjs
+            host/server/storage.mjs
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate bot recipes, schemas, and secret guardrails
+        run: |
+          node .prokbot-tools/host/tools/build-market-index.mjs \
+            --source ./bots \
+            --registry-name "${REGISTRY_NAME}" \
+            --check
+
+      - name: Build index.json and deterministic ZIP packages
+        if: github.event_name != 'pull_request'
+        run: |
+          node .prokbot-tools/host/tools/build-market-index.mjs \
+            --source ./bots \
+            --output ./dist \
+            --registry-name "${REGISTRY_NAME}"
+          if [ -f ./site/index.html ]; then
+            cp ./site/index.html ./dist/index.html
+          fi
+          touch ./dist/.nojekyll
+
+      - name: Upload GitHub Pages artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  deploy-pages:
+    if: github.event_name != 'pull_request'
+    needs: validate-and-build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy Bot Market to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

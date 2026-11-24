@@ -1,0 +1,24 @@
+{
+  "slug": "homelab-nas-doctor",
+  "version": "1.0.0",
+  "category": "ops",
+  "name": {
+    "zh-CN": "家庭服务器与 Docker 体检医生",
+    "en": "Homelab & Docker Health Doctor"
+  },
+  "tagline": {
+    "zh-CN": "排查 NAS、Docker Compose、反向代理与磁盘空间告警，只做可回滚的安全建议。",
+    "en": "Diagnoses NAS, Docker Compose, reverse-proxy, and disk alerts with safe, reversible steps."
+  },
+  "description": {
+    "zh-CN": "面向自部署与 Homelab 玩家的日常运维医生：分析容器日志、OOM、健康检查失败、证书过期与磁盘膨胀，提供只读诊断命令和可回滚修复清单。",
+    "en": "A pragmatic operations companion for self-hosters and homelab owners. Triages container crash loops, OOM kills, reverse-proxy errors, TLS expiry, and disk bloat with read-only checks and reversible runbooks."
+  },
+  "author": "ProkBot Community",
+  "license": "ProkBot-Noncommercial-1.0",
+  "tags": ["homelab", "docker", "nas", "selfhost", "ops", "运维"],
+  "avatarShape": "shield",
+  "avatarColor": "emerald",
+  "requiredApps": [],
+  "optionalApps": ["home-assistant", "web-watch"]
+}

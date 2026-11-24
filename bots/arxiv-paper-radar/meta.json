@@ -1,0 +1,24 @@
+{
+  "slug": "arxiv-paper-radar",
+  "version": "1.0.0",
+  "category": "research",
+  "name": {
+    "zh-CN": "论文速读与前沿雷达",
+    "en": "ArXiv Paper Radar"
+  },
+  "tagline": {
+    "zh-CN": "提炼论文核心贡献、实验证据与局限性，3 分钟看懂新研究值不值得精读。",
+    "en": "Distills research papers into core claims, evidence, and limitations in a 3-minute read."
+  },
+  "description": {
+    "zh-CN": "面向 AI、系统与工程研究者的论文速读与追踪助手。支持单篇 PDF/链接深度拆解、多篇对比矩阵，以及结合 RSS / Notion 建立个人文献卡片。",
+    "en": "A research paper triage and synthesis partner for AI and systems engineers. Breaks down papers into structured cards, builds side-by-side comparison matrices, and optionally saves digests to Notion."
+  },
+  "author": "ProkBot Community",
+  "license": "ProkBot-Noncommercial-1.0",
+  "tags": ["arxiv", "papers", "research", "ai", "reading", "论文"],
+  "avatarShape": "diamond",
+  "avatarColor": "violet",
+  "requiredApps": [],
+  "optionalApps": ["rss", "notion"]
+}

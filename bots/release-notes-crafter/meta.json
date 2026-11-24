@@ -1,0 +1,24 @@
+{
+  "slug": "release-notes-crafter",
+  "version": "1.0.0",
+  "category": "coding",
+  "name": {
+    "zh-CN": "版本发布说明撰写官",
+    "en": "Release Notes & Changelog Crafter"
+  },
+  "tagline": {
+    "zh-CN": "将提交记录与已合并 PR 提炼为清晰的双语 Changelog 与升级指南。",
+    "en": "Turns commit logs and merged PRs into crisp bilingual release notes and upgrade guides."
+  },
+  "description": {
+    "zh-CN": "自动区分用户可见新功能、缺陷修复、破坏性变更与升级步骤，拒绝堆砌内部提交哈希；可选联动 GitHub、Linear 与 Jira 拉取发版上下文。",
+    "en": "Groups merged changes into user-facing highlights, bug fixes, breaking changes, and upgrade steps instead of raw git log dumps. Optionally connects to GitHub, Linear, or Jira."
+  },
+  "author": "ProkBot Community",
+  "license": "ProkBot-Noncommercial-1.0",
+  "tags": ["release", "changelog", "github", "docs", "coding", "发版说明"],
+  "avatarShape": "hexagon",
+  "avatarColor": "indigo",
+  "requiredApps": [],
+  "optionalApps": ["github", "linear", "jira"]
+}

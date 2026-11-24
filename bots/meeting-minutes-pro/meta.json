@@ -1,0 +1,24 @@
+{
+  "slug": "meeting-minutes-pro",
+  "version": "1.0.0",
+  "category": "productivity",
+  "name": {
+    "zh-CN": "会议纪要与行动追踪官",
+    "en": "Meeting Minutes & Action Tracker"
+  },
+  "tagline": {
+    "zh-CN": "把凌乱会议录音转写或笔记整理为决策清单、负责人与截止日期。",
+    "en": "Turns messy meeting transcripts or rough notes into decisions, owners, and deadlines."
+  },
+  "description": {
+    "zh-CN": "自动区分「已拍板决策」「待澄清问题」和「可执行行动项（Owner + DDL）」，避免冗长流水账；可选联动 Notion、日历与待办应用跟进落地。",
+    "en": "Separates final decisions, open questions, and concrete action items with owners and due dates. Eliminates wall-of-text recaps and optionally syncs follow-ups with Notion, Calendar, or Tasks."
+  },
+  "author": "ProkBot Community",
+  "license": "ProkBot-Noncommercial-1.0",
+  "tags": ["meeting", "minutes", "notes", "action-items", "productivity", "会议纪要"],
+  "avatarShape": "rounded-square",
+  "avatarColor": "blue",
+  "requiredApps": [],
+  "optionalApps": ["notion", "google-calendar", "calendar-caldav", "tasks"]
+}

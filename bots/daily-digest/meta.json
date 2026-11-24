@@ -1,0 +1,34 @@
+{
+  "slug": "daily-digest",
+  "version": "1.0.0",
+  "category": "productivity",
+  "name": {
+    "zh-CN": "每日摘要助手",
+    "en": "Daily Digest Assistant"
+  },
+  "tagline": {
+    "zh-CN": "用一页纸浓缩今日日程、未读重要邮件与三项关键待办。",
+    "en": "Distills today's schedule, important unread mail, and top three priorities onto one crisp page."
+  },
+  "description": {
+    "zh-CN": "面向个人与小团队的每日信息压缩助手：优先汇总已连接日历和邮箱中的关键信号，自动过滤通知噪音，并在无外部连接时也能根据用户口述生成结构化行动摘要。",
+    "en": "A lightweight daily briefing assistant for individuals and small teams. Highlights high-signal calendar events and unread emails when connected, filters out automated noise, and falls back gracefully to manual notes."
+  },
+  "author": "ProkBot Community",
+  "license": "ProkBot-Noncommercial-1.0",
+  "tags": [
+    "digest",
+    "daily",
+    "summary",
+    "briefing",
+    "productivity"
+  ],
+  "avatarShape": "orb",
+  "avatarColor": "teal",
+  "requiredApps": [],
+  "optionalApps": [
+    "gmail",
+    "google-calendar",
+    "notion"
+  ]
+}

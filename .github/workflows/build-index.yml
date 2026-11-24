@@ -18,8 +18,8 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: pages-bot-market
-  cancel-in-progress: false
+  group: ${{ github.event_name == 'pull_request' && format('pr-validate-{0}', github.ref) || 'pages-bot-market' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   REGISTRY_NAME: ProkBot Community Market
@@ -31,37 +31,71 @@ jobs:
       contents: read
     steps:
       - name: Checkout market repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
+          fetch-depth: ${{ github.event_name == 'pull_request' && 0 || 1 }}
           persist-credentials: false
 
+      - name: Checkout trusted validator from base commit (PR only)
+        if: github.event_name == 'pull_request'
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: .trusted-tools
+          sparse-checkout: tools
+          persist-credentials: false
+
+      - name: Block external PR changes to tooling, site, or workflows
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          CHANGED="$(git diff --name-only "${BASE_SHA}" HEAD -- tools/ site/ .github/)"
+          if [ -n "${CHANGED}" ]; then
+            echo "::error::External PRs may only modify bots/** and README.md. Restricted files changed:"
+            echo "${CHANGED}"
+            exit 1
+          fi
+
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '22'
 
       - name: Validate bot recipes, schemas, and secret guardrails
         run: |
-          node tools/host/tools/build-market-index.mjs \
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BUILDER=".trusted-tools/tools/host/tools/build-market-index.mjs"
+          else
+            BUILDER="tools/host/tools/build-market-index.mjs"
+          fi
+          node "${BUILDER}" \
             --source ./bots \
             --registry-name "${REGISTRY_NAME}" \
             --check
 
-      - name: Build index.json and deterministic ZIP packages
-        if: github.event_name != 'pull_request'
+      - name: Build index.json, deterministic ZIP packages, and static site
         run: |
-          node tools/host/tools/build-market-index.mjs \
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BUILDER=".trusted-tools/tools/host/tools/build-market-index.mjs"
+          else
+            BUILDER="tools/host/tools/build-market-index.mjs"
+          fi
+          rm -rf ./dist
+          mkdir -p ./dist
+          if [ -d ./site ]; then
+            cp -R ./site/. ./dist/
+          fi
+          rm -rf ./dist/index.json ./dist/packages
+          node "${BUILDER}" \
             --source ./bots \
             --output ./dist \
             --registry-name "${REGISTRY_NAME}"
-          if [ -f ./site/index.html ]; then
-            cp ./site/index.html ./dist/index.html
-          fi
           touch ./dist/.nojekyll
 
       - name: Upload GitHub Pages artifact
         if: github.event_name != 'pull_request'
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
           path: ./dist
 
@@ -78,4 +112,4 @@ jobs:
     steps:
       - name: Deploy Bot Market to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4

@@ -1,0 +1,15 @@
+NOTICE
+
+ProkBot Community Bot Market
+Licensed under the ProkBot Noncommercial License 1.0 (see LICENSE).
+
+Upstream & Derived Components Attribution:
+- ProkBot: https://gitee.com/ahaduoduoduo/ProkBot
+- ProkBot Plus: https://github.com/ferretgeek/prokbot-plus
+- Vendored registry builder under `tools/host/`: zero-dependency pure-Node
+  validator, deterministic ZIP packager, and secret-guardrail modules derived
+  from ProkBot / ProkBot Plus / ProkBot Host2 under the ProkBot Noncommercial
+  License 1.0.
+
+All community Bot templates under `bots/` are original declarative templates
+distributed under the same ProkBot Noncommercial License 1.0.

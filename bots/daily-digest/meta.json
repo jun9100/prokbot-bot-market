@@ -21,7 +21,9 @@
     "daily",
     "summary",
     "briefing",
-    "productivity"
+    "productivity",
+    "摘要",
+    "日报"
   ],
   "avatarShape": "orb",
   "avatarColor": "teal",
